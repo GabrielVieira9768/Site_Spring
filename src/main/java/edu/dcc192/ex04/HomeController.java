@@ -44,7 +44,7 @@ public class HomeController {
             return mv;
         }
 
-        redirectAttributes.addFlashAttribute("message", "Código incorreto. Tente novamente.");
+        redirectAttributes.addFlashAttribute("message", "Código incorreto, tente novamente!");
         return new ModelAndView("redirect:/");
     }
 }
