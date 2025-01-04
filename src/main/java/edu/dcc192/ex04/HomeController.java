@@ -21,6 +21,7 @@ public class HomeController {
     public ModelAndView home(HttpSession session) {
         String codigoGerado = senha.GerarSenha();
         session.setAttribute("codigoGerado", codigoGerado);
+        session.setAttribute("login", false);
         ModelAndView mv = new ModelAndView("login");
         mv.addObject("senha", codigoGerado);
         return mv;
@@ -34,17 +35,39 @@ public class HomeController {
     }
 
     @GetMapping("/menu")
-    public ModelAndView login(@RequestParam String name, @RequestParam String codigo, HttpSession session, RedirectAttributes redirectAttributes) {
+    public ModelAndView login( @RequestParam(required = false) String name, @RequestParam(required = false) String codigo, HttpSession session, RedirectAttributes redirectAttributes) {
         String codigoGerado = (String) session.getAttribute("codigoGerado");
-
-        if (codigoGerado != null && codigoGerado.equals(codigo)) {
-            ModelAndView mv = new ModelAndView("menu");
+        ModelAndView mv = new ModelAndView("menu");
+    
+        if (verificaCodigo(codigo, codigoGerado) && (boolean) session.getAttribute("login") == false) {
+            session.setAttribute("login", true);
+            session.setAttribute("userName", name);
             mv.addObject("userName", name);
             mv.addObject("dados", dados.pegaDados());
             return mv;
+        } else if((boolean) session.getAttribute("login") == true) {
+            mv.addObject("userName", (String) session.getAttribute("userName"));
+            mv.addObject("dados", dados.pegaDados());
+            return mv;
         }
-
+    
         redirectAttributes.addFlashAttribute("message", "Código incorreto, tente novamente!");
         return new ModelAndView("redirect:/");
     }
+
+    public boolean verificaCodigo(String codigo, String codigoGerado){
+        if (codigoGerado != null && codigoGerado.equals(codigo)) {
+            return true;
+        }
+        return false;
+    }
+
+    @GetMapping("/Perfil")
+    public ModelAndView perfil(HttpSession session) {
+        String userName = (String) session.getAttribute("userName");
+        ModelAndView mv = new ModelAndView("perfil");
+        mv.addObject("userName", userName);
+        return mv;
+    }
+    
 }
