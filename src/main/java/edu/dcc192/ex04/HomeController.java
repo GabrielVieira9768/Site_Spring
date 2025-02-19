@@ -41,27 +41,38 @@ public class HomeController {
     }
 
     @GetMapping("/menu")
-    public ModelAndView login( @RequestParam(required = false) String name, @RequestParam(required = false) String password, @RequestParam(required = false) String codigo, HttpSession session, RedirectAttributes redirectAttributes) {
+    public ModelAndView login(@RequestParam(required = false) String name, 
+                              @RequestParam(required = false) String password, 
+                              @RequestParam(required = false) String codigo, 
+                              HttpSession session, 
+                              RedirectAttributes redirectAttributes) {
+        
+        Boolean isLoggedIn = (Boolean) session.getAttribute("login");
+    
+        // Se o usuário já estiver logado, redireciona para o menu sem validar novamente
+        if (isLoggedIn != null && isLoggedIn) {
+            ModelAndView mv = new ModelAndView("menu");
+            mv.addObject("userName", session.getAttribute("userName"));
+            mv.addObject("dados", dados.pegaDados());
+            return mv;
+        }
+    
         String codigoGerado = (String) session.getAttribute("codigoGerado");
-        ModelAndView mv = new ModelAndView("menu");
-        if(validaLogin(name, password)){
-            if (verificaCodigo(codigo, codigoGerado) && (boolean) session.getAttribute("login") == false) {
-                session.setAttribute("login", true);
-                session.setAttribute("userName", name);
-                session.setAttribute("password", password);
-                mv.addObject("userName", name);
-                mv.addObject("dados", dados.pegaDados());
-                return mv;
-            } else if((boolean) session.getAttribute("login") == true) {
-                mv.addObject("userName", (String) session.getAttribute("userName"));
-                mv.addObject("dados", dados.pegaDados());
-                return mv;
-            }
+    
+        if (validaLogin(name, password) && verificaCodigo(codigo, codigoGerado)) {
+            session.setAttribute("login", true);
+            session.setAttribute("userName", name);
+            session.setAttribute("password", password);
+    
+            ModelAndView mv = new ModelAndView("menu");
+            mv.addObject("userName", name);
+            mv.addObject("dados", dados.pegaDados());
+            return mv;
         }
     
         redirectAttributes.addFlashAttribute("message", "Login e/ou código incorretos, tente novamente!");
         return new ModelAndView("redirect:/");
-    }
+    }    
 
     public boolean verificaCodigo(String codigo, String codigoGerado){
         if (codigoGerado != null && codigoGerado.equals(codigo)) {
@@ -70,20 +81,33 @@ public class HomeController {
         return false;
     }
 
-    @GetMapping("/Perfil")
-    public ModelAndView perfil(HttpSession session) {
+    @GetMapping("/perfil")
+    public ModelAndView perfil(HttpSession session, RedirectAttributes redirectAttributes) {
+        Boolean isLoggedIn = (Boolean) session.getAttribute("login");
+    
+        if (isLoggedIn == null || !isLoggedIn) {
+            redirectAttributes.addFlashAttribute("message", "Você precisa estar logado para acessar essa página!");
+            return new ModelAndView("redirect:/");
+        }
+    
         String userName = (String) session.getAttribute("userName");
         ModelAndView mv = new ModelAndView("perfil");
         mv.addObject("userName", userName);
         return mv;
     }
-
+    
     @RequestMapping({"/usuarios"})
-    public ModelAndView usuarios() {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("usuarios");
+    public ModelAndView usuarios(HttpSession session, RedirectAttributes redirectAttributes) {
+        Boolean isLoggedIn = (Boolean) session.getAttribute("login");
+        
+        if (isLoggedIn == null || !isLoggedIn) {
+            redirectAttributes.addFlashAttribute("message", "Você precisa estar logado para acessar essa página!");
+            return new ModelAndView("redirect:/");
+        }
+    
+        ModelAndView mv = new ModelAndView("usuarios");
         List<UsuarioController> usuarios = ur.findAll();
-        mv.addObject("usuarios",usuarios);
+        mv.addObject("usuarios", usuarios);
         return mv;
     }
 
@@ -107,8 +131,8 @@ public class HomeController {
     }
 
     @RequestMapping({"/create"})
-    public String create(@RequestParam String name, @RequestParam String password, RedirectAttributes redirectAttributes) {
-        ur.save(new UsuarioController(name, password));
+    public String create(@RequestParam String name, @RequestParam String password, @RequestParam String email, RedirectAttributes redirectAttributes) {
+        ur.save(new UsuarioController(name, password, email));
         redirectAttributes.addFlashAttribute("message", "Usuário criado com sucesso!");
         return "redirect:/usuarios";
     }    

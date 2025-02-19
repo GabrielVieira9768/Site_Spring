@@ -12,14 +12,16 @@ public class UsuarioController {
     private Long id;
     private String login;
     private String senha;
+    private String email;
 
     public UsuarioController(){
-        this(null,null);
+        this(null,null,null);
     }
     
-    public UsuarioController(String login, String senha) {
+    public UsuarioController(String login, String senha, String email) {
         this.login = login;
         this.senha = senha;
+        this.email = email;
     }
 
     public Long getId() {
@@ -34,6 +36,15 @@ public class UsuarioController {
     public void setLogin(String login) {
         this.login = login;
     }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getSenha() {
         return senha;
     }
@@ -42,6 +53,6 @@ public class UsuarioController {
     }
     @Override
     public String toString() {
-        return "Usuario [id=" + id + ", login=" + login + ", senha=" + senha + "]";
+        return "Usuario [id=" + id + ", login=" + login + ", senha=" + senha + " email=" + email + "]";
     }
 }
