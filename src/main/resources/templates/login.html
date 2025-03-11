@@ -18,12 +18,12 @@
             <div class="alert alert-warning p-2" th:if="${message}" th:text="${message}"></div>
             <form th:action="@{/menu}" method="get">
                 <div class="mb-3">
-                    <label class="mb-2" for="name">Digite seu nome:</label>
-                    <input class="form-control" type="text" id="name" name="name" placeholder="Seu nome" required />
+                    <label class="mb-2" for="login">Digite seu nome:</label>
+                    <input class="form-control" type="text" id="login" name="login" placeholder="Seu nome" required />
                 </div>
                 <div class="mb-3">
-                    <label class="mb-2" for="password">Digite sua senha:</label>
-                    <input class="form-control" type="text" id="password" name="password" placeholder="Sua senha" required />
+                    <label class="mb-2" for="senha">Digite sua senha:</label>
+                    <input class="form-control" type="text" id="senha" name="senha" placeholder="Sua senha" required />
                 </div>
                 <div class="">
                     <label class="mb-2" th:text="'Digite o código: '+${senha}"></label>
@@ -33,9 +33,9 @@
                     </div>
                 </div>
             </form>
-            <div class="mt-4 text-center">
+            <!-- <div class="mt-4 text-center">
                 <p>Não possui um cadastro ainda? <span><a href="/cadastro" class="">Cadastrar</a></span></p>
-            </div>
+            </div> -->
         </div>
     </div>
 </body>

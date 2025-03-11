@@ -14,25 +14,19 @@
 <body class="bg-dark">
     <div class="w-25 mx-auto vh-100 d-flex align-items-center">
         <div class="w-100 card p-4 bg-light">
-            <form th:action="@{/logout}" method="get">
                 <div>
-                    <p th:text="'Bem vindo, ' + ${userName} + '!'"></p>
-                    <div class="">
-                        <select class="form-select my-3" id="escolha" name="nome" >
-                            <option th:each="entry : ${dados.entrySet()}"
-                                th:value="${entry.key}"
-                                th:text="${entry.value}">
-                            </option>
-                        </select>
-                        <div class="mx-auto w-50">
-                            <button class="btn_enviar w-100 btn btn-dark mb-2" type="submit">Sair</button>
-                        </div>
-                    </div>
+                    <p th:text="'Bem vindo, ' + ${login} + '!'"></p>
                 </div>
-            </form>
             <div class="mx-auto w-100">
                 <a href="/perfil" class="w-100 btn btn-dark text-white text-decoration-none mb-2">Perfil</a>
-                <a href="/usuarios" class="w-100 btn btn-dark text-white text-decoration-none">Gerenciar Usuários</a>
+                <th:block th:if="${session.cargo}">
+                    <a href="/usuarios" class="w-100 btn btn-dark text-white text-decoration-none">Gerenciar Usuários</a>
+                </th:block>
+                <form th:action="@{/logout}" method="get">
+                    <div class="mx-auto w-50">
+                        <button class="btn_enviar w-100 btn btn-dark mb-2" type="submit">Sair</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
